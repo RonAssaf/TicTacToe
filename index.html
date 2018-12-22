@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>TicTacToe - Ron Assaf</title>
+    <link rel="stylesheet" type="text/css" href="style/style.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+    <body>
+        <div id="playerTurn">Now playing: <span id="nowPlaying"></span></div>
+        <table id="board">
+            <tbody>
+                <tr>
+                    <td class="rightBorder"></td>
+                    <td class="rightBorder"></td>
+                    <td></td>
+                </tr>
+                <tr class="topBorder">
+                    <td class="rightBorder"></td>
+                    <td class="rightBorder"></td>
+                    <td></td>
+                </tr>
+                <tr class="topBorder">
+                    <td class="rightBorder"></td>
+                    <td class="rightBorder"></td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+        <div id="wrapper">
+            <button id="resetGame" onclick="resetGame()">Reset Game</button>
+        </div>
+        <script src="javascript/TicTacToe.js" type="application/javascript"></script>
+    </body>
+</html>

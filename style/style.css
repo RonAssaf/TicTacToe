@@ -1,0 +1,10 @@
+html {width: 100%;  font-family: "Calibri Light";}
+div#playerTurn {width: 100%; text-align: center; font-size: 40px;}
+span#nowPlaying {font-weight: bold;}
+table#board {width: 50%; margin: 50px auto; font-size: 40px; text-align: center; border-spacing: 0px; border-collapse: collapse;}
+table#board tr {height: 150px; padding: 0;}
+table#board tr td{width: 150px; padding: 0; font-weight: bold;}
+table#board tr td.rightBorder {border-right: 2px solid black;}
+table#board tr.topBorder {border-top: 2px solid black;}
+div#wrapper{width: 100%; text-align: center;}
+button#resetGame {font-size: 20px; background-color: #555555; border: none; color: white; padding: 15px 30px;}
