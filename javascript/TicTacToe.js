@@ -1,74 +1,36 @@
-var Players = {
-    playerOne: "X",
-    playerTwo: "O"
-};
+const winBackgroundColor = "#2ecc71";
+const winTextColor = "white";
+const defaultBackgroundColor = "white";
+const defaultTextColor = "black";
+const tableDOMSelector = "table#board";
 
-function Board() {
-    this.board = new Array(new Array(3), new Array(3), new Array(3));
-    this.markSlot = function (slot, mark) {
-        this.board[slot[0]][slot[1]] = mark;
-    }
-
-    this.slotIsEmpty = function (slot) {
-        return this.board[slot[0]][slot[1]] == null;
-    }
-
-    this.checkWin = function () {
-        for (var i = 0; i < this.board.length; i++) {
-            if (this.board[i][0] == this.board[i][1] && this.board[i][1] == this.board[i][2] &&
-                this.board[i][0] != null) {
-                return [[i, 0], [i, 1], [i, 2]];
-            }
-        }
-
-        for (var i = 0; i < this.board.length; i++) {
-            if (this.board[0][i] == this.board[1][i] && this.board[1][i] == this.board[2][i] &&
-                this.board[0][i] != null) {
-                return [[0, i], [1, i], [2, i]];
-            }
-        }
-
-        if (this.board[0][0] == this.board[1][1] && this.board[1][1] == this.board[2][2] &&
-            this.board[1][1] != null) {
-            return [[0, 0], [1, 1], [2, 2]];
-        }
-
-
-        if (this.board[0][2] == this.board[1][1] && this.board[1][1] == this.board[2][0] &&
-            (this.board[1][1] != null)) {
-            return [[0, 2], [1, 1], [2, 0]];
-        }
-
-        return null;
-    }
-
-    this.boardIsFull = function () {
-        for (var i = 0; i < this.board.length; i++) {
-            for (var j = 0; i < this.board[i].length; j++) {
-                if (this.board[i][j] != null) {
-                    return false;
-                }
-            }
-        }
-
-        return true;
-    }
-
-    this.reset = function () {
-        this.board = new Array(new Array(3), new Array(3), new Array(3));
-    }
-
-}
-
-var Board = new Board(),
+var Board = new Board(WinGameInform, DrawGameInform),
     gameRunning = true,
     playerTurn;
-var allTds = document.getElementsByTagName("td");
-for (var td of allTds) {
+let tableBoard = document.querySelector(tableDOMSelector);
+var allTds = tableBoard.querySelectorAll("tr td");
+
+allTds.forEach(function (td) {
     addEvent("click", td, TapOnBoard);
+});
+
+startGame();
+
+function WinGameInform() {
+    alert(playerTurn.name + " is win!");
 }
 
-changeNowPlaying();
+function DrawGameInform() {
+    alert("Draw!");
+}
+
+function InitializeAllTds() {
+
+}
+function startGame() {
+    InitializeAllTds
+    changePlayerTurn();
+}
 
 function addEvent(event, element, func) {
     if (element.addEventListener) {
@@ -80,87 +42,85 @@ function addEvent(event, element, func) {
     }
 }
 
-function changeNowPlaying() {
-    playerTurn = (playerTurn == null || playerTurn == Players.playerTwo) ? Players.playerOne : Players.playerTwo;
-    document.getElementById("nowPlaying").innerText = playerSignToPlayerNumber(playerTurn);
+function changePlayerTurn() {
+    playerTurn = (playerTurn == null || playerTurn === Players.playerTwo) ? Players.playerOne : Players.playerTwo;
+    setPlayerName(playerTurn.name);
 }
 
 function TapOnBoard(Node) {
     if (gameRunning) {
-        var index = convertTdNodeToArrayIndex(Node.target);
+        let index = convertTdNodeToArrayIndex(Node.target);
         if (Board.slotIsEmpty(index)) {
             markSlot(Node.target, index);
             CheckGameFinished();
-            changeNowPlaying();
-        } else {
-            alert("error.. ");
+            if (gameRunning) {
+                changePlayerTurn();
+            }
         }
     }
 }
 
 function CheckGameFinished() {
-    var winSlots = Board.checkWin();
+    let winSlots = Board.checkWin();
     if (winSlots) {
-        alert(playerSignToPlayerNumber(playerTurn) + " is win!");
         markSlotsThatWin(winSlots);
+        setTimeout(function () {
+            Board.winGame()
+        }, 0);
         gameRunning = false;
     } else {
         if (Board.boardIsFull()) {
-            alert("draw!");
+            Board.drawGame();
             gameRunning = false;
         }
     }
 }
 
 function markSlotsThatWin(winSlots) {
-    var getAllTds = document.querySelectorAll("table#board tr td");
-    for (var i = 0; i < winSlots.length; i++) {
-        var getSlot = winSlots[i];
-        var tdPosition = (getSlot[0] * 3) + getSlot[1];
-        getAllTds[tdPosition].style.backgroundColor = "#2ecc71";
-        getAllTds[tdPosition].style.color = "white";
+    for (let i = 0; i < winSlots.length; i++) {
+        let getSlot = winSlots[i];
+        let tdPosition = (getSlot[0] * 3) + getSlot[1];
+
+        allTds[tdPosition].style.backgroundColor = winBackgroundColor;
+        allTds[tdPosition].style.color = winTextColor;
     }
 }
 
 function markSlot(uiSlot, slot) {
-    Board.markSlot(slot, playerTurn);
-    uiSlot.innerText = playerTurn;
-
-}
-
-function playerSignToPlayerNumber(sign) {
-    if (sign == Players.playerOne) {
-        return "Player 1";
-    }
-
-    return "Player 2";
+    Board.markSlot(slot, playerTurn.sign);
+    uiSlot.innerText = playerTurn.sign;
 }
 
 function convertTdNodeToArrayIndex(Node) {
-    var getAllTds = document.querySelectorAll("table#board tr td");
-    var index;
-    for (var i = 0; i < getAllTds.length; i++) {
-        if (getAllTds[i].isSameNode(Node)) {
+    let index;
+    for (let i = 0; (i < allTds.length) || (index == null); i++) {
+        if (allTds[i].isSameNode(Node)) {
             index = i;
         }
     }
 
-    var row = Math.floor(index / 3)
-    var col = index % 3;
+    let row = Math.floor(index / 3);
+    let col = index % 3;
 
     return [row, col];
+}
+
+function setPlayerName(name) {
+    document.getElementById("nowPlaying").innerText = name;
 }
 
 function resetGame() {
     Board.reset();
     playerTurn = Players.playerOne;
-    document.getElementById("nowPlaying").innerText = playerSignToPlayerNumber(playerTurn);
+    setPlayerName(playerTurn.name);
     resetTable();
+    gameRunning = true;
 }
 
 function resetTable() {
-    var getAllTds = document.querySelectorAll("table#board tr td");
-    for (var i = 0; i < getAllTds.length; i++) {
-        getAllTds[i].innerHTML = "";
-    }
+    allTds.forEach(function (td) {
+        td.innerHTML = "";
+        td.style.backgroundColor = defaultBackgroundColor;
+        td.style.color = defaultTextColor;
+    });
 }
